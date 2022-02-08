@@ -38,7 +38,9 @@ function VehicleValueForm() {
             <h1 className="welcometext">Welcome to Carzila</h1>
             <p className="welcometext">Get your Trade-in Value now</p>
             </Grid>
+
             <Grid xs={12} ml={6}>
+              
       <Radio
         checked={selectedValue === 'VIN'}
         onChange={handleChange}
