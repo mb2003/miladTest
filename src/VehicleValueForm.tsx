@@ -29,7 +29,7 @@ function VehicleValueForm() {
   };
   return (
     <div className="box">
-      <Box sx={{ flexGrow: 1 }} width={400}>
+      <Box sx={{ flexGrow: 1 }}>
         <Grid container>
           <Grid xs={12} m={3}>
             <h1 className="logo">CARZILA</h1>
@@ -56,19 +56,20 @@ function VehicleValueForm() {
           </Grid>
           {getValueOption ? <VIN_Form/> : <LicensePlateForm/>}
       
+          </Grid>
 
-          <Grid item xs={5}></Grid>
-          <Grid item xs={6}>
+          <Grid item xs={10}>
             <Button
               variant="contained"
               endIcon={<DriveEtaIcon />}
               className="getValueButton"
-              style={{ float: "right" }}
+              style={{ marginLeft: '3em'}}
             >
               Get your Value
             </Button>
           </Grid>
-        </Grid>
+          <Grid item xs={1} md={4}></Grid>
+
       </Box>
     </div>
   );
