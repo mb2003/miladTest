@@ -28,10 +28,10 @@ function VehicleValueForm() {
 
   };
   return (
-    <div className="box">
+    <div className="box" style={{width: '100%'}}>
       <Box sx={{ flexGrow: 1 }}>
         <Grid container>
-          <Grid xs={12} m={3}>
+          <Grid xs={12}>
             <h1 className="logo">CARZILA</h1>
           </Grid>
           <Grid xs={12}>
