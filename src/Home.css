@@ -1,0 +1,34 @@
+
+.box {
+  background-color: #f4f7fa;
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  height: 'auto';
+  display: flex;
+  flex-flow: column wrap;
+}
+
+.logo{
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 5vh;
+  letter-spacing: 33px;
+  font-weight: 400;
+  font-style: normal;
+  font-variant: small-caps;
+  text-transform: capitalize;
+  text-align: center;
+}
+
+.welcometext{
+  font-family: Arial;
+  font-weight: 100;
+  font-style: normal;
+  margin-left: 15%;  
+}
+.landingtext{
+  font-family: Arial;
+  font-weight: 100;
+  font-style: normal;
+  margin-left: 15%;  
+}
