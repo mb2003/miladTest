@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import VehicleValueForm from './VehicleValueForm';
+import Calender from './Calender';
 import reportWebVitals from './reportWebVitals';
 
 ReactDOM.render(
   <React.StrictMode>
-    <VehicleValueForm />
+    <Calender />
   </React.StrictMode>,
   document.getElementById('root')
 );
