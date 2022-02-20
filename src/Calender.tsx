@@ -1,4 +1,3 @@
-import { color } from "@mui/system";
 import {
     add,
     addDays,
@@ -7,9 +6,7 @@ import {
     startOfWeek,
     eachHourOfInterval,
 } from "date-fns";
-import { fi, th, tr } from "date-fns/locale";
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { ItemDescription } from "semantic-ui-react";
 import "./Calender.css";
 
 enum Week {
@@ -71,27 +68,27 @@ function Calender() {
         [week]
     );
 
-    var myJson = [
-        {
-            day: "",
-            date: "",
-            times: [
-                { hour: 9, booked: true },
-                { hour: 10, booked: true },
-                { hour: 11, booked: true },
-                { hour: 12, booked: true },
-            ],
-        },
-    ];
+    // var myJson = [
+    //     {
+    //         day: "",
+    //         date: "",
+    //         times: [
+    //             { hour: 9, booked: true },
+    //             { hour: 10, booked: true },
+    //             { hour: 11, booked: true },
+    //             { hour: 12, booked: true },
+    //         ],
+    //     },
+    // ];
 
-    const overJson = () => {
-        for (let index = 0; index < myJson.length; index++) {
-            let date = week[index].toLocaleDateString();
-            let day = week[index].toDateString().substring(0, 3);
-            myJson[index].date = date;
-            myJson[index].day = day;
-        }
-    };
+    // const overJson = () => {
+    //     for (let index = 0; index < myJson.length; index++) {
+    //         let date = week[index].toLocaleDateString();
+    //         let day = week[index].toDateString().substring(0, 3);
+    //         myJson[index].date = date;
+    //         myJson[index].day = day;
+    //     }
+    // };
 
     interface json {
         day: string;
