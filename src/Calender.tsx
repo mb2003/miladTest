@@ -2,6 +2,13 @@ import { Button } from "@mui/material";
 import { addDays, getDate } from "date-fns";
 import id from "date-fns/esm/locale/id/index.js";
 import { stringify } from "querystring";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
+import Paper from "@mui/material/Paper";
 import React, {
     JSXElementConstructor,
     useEffect,
@@ -42,9 +49,9 @@ function Calender() {
     useEffect(() => {}, [startOfWeek]);
 
     const getNextWeek = () => {
-        const nextMonday = addDays(week[Week.SUNDAY], 1);
-        setStartOfWeek(nextMonday);
-        setWeek(getWeekByFirstDayOfWeek(nextMonday));
+        const nextDayInAWeek = addDays(week[Week.SUNDAY], 1);
+        setStartOfWeek(nextDayInAWeek);
+        setWeek(getWeekByFirstDayOfWeek(nextDayInAWeek));
     };
 
     const weekDayNames = useMemo(
@@ -94,12 +101,12 @@ function Calender() {
         minutes: Array<string>;
     }
 
-    const idCreator =() => {
-        let id = 10000 * Math.random()
-        
+    const idCreator = () => {
+        let id = 10000 * Math.random();
+
         return id;
-    }
-    
+    };
+
     function DataCalender() {
         const calenderData: CalendarYear[] = [];
         const appointment: Array<Appointment> = [];
@@ -122,7 +129,7 @@ function Calender() {
                             month: day.getMonth() + 1,
                             days: [
                                 {
-                                    day: day.toString().substring(0,15),
+                                    day: day.toString().substring(0, 15),
                                     appointments: appointment,
                                 },
                             ],
@@ -138,7 +145,11 @@ function Calender() {
                 calenderData.flatMap((a) =>
                     a.months.flatMap((a) =>
                         a.days.flatMap((a, i) => (
-                            <td key={idCreator()}><Button >{a.appointments[index].hour}</Button></td>
+                            <TableCell key={idCreator()}>
+                                <Button variant="contained" size="large" fullWidth>
+                                    <h3>{a.appointments[index].hour}</h3>
+                                </Button>
+                            </TableCell>
                         ))
                     )
                 )
@@ -146,17 +157,35 @@ function Calender() {
         }
 
         return (
-            <table>
-                <tr>
-                    {calenderData.map((v) => (
-                        <th key={idCreator()}>{v.months.map((a) => a.days.map((a) => a.day))}</th>
-                    ))}
-                </tr>
-
-                {hourRowsReactElement.map((a, i) => (
-                    <tr key={i}>{a}</tr>
-                ))}
-            </table>
+            <>
+                <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                    <TableHead>
+                        <TableRow>
+                            {calenderData.map((v) => (
+                                <TableCell key={idCreator()}>
+                                    {v.months.map((a) =>
+                                        a.days.map((a) => a.day)
+                                    )}
+                                </TableCell>
+                            ))}
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {hourRowsReactElement.map((a, i) => (
+                            <TableRow
+                                key={i}
+                                sx={{
+                                    "&:last-child td, &:last-child th": {
+                                        border: 0,
+                                    },
+                                }}
+                            >
+                                {a}
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </>
         );
     }
 
@@ -164,7 +193,6 @@ function Calender() {
         <div className="calender">
             <button onClick={getNextWeek}>Get Next Week</button>
             <DataCalender />
-   
         </div>
     );
 }
