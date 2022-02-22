@@ -1,12 +1,12 @@
-import {
-    add,
-    addDays,
-    format,
-    getDate,
-    startOfWeek,
-    eachHourOfInterval,
-} from "date-fns";
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import { addDays, getDate } from "date-fns";
+import { stringify } from "querystring";
+import React, {
+    JSXElementConstructor,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
 import "./Calender.css";
 
 enum Week {
@@ -68,76 +68,114 @@ function Calender() {
         [week]
     );
 
-    // var myJson = [
-    //     {
-    //         day: "",
-    //         date: "",
-    //         times: [
-    //             { hour: 9, booked: true },
-    //             { hour: 10, booked: true },
-    //             { hour: 11, booked: true },
-    //             { hour: 12, booked: true },
-    //         ],
-    //     },
-    // ];
+    const openingHours = { from: 9, to: 20 };
 
-    // const overJson = () => {
-    //     for (let index = 0; index < myJson.length; index++) {
-    //         let date = week[index].toLocaleDateString();
-    //         let day = week[index].toDateString().substring(0, 3);
-    //         myJson[index].date = date;
-    //         myJson[index].day = day;
-    //     }
-    // };
+    const quarterHour = [":00", ":15", ":30", ":45"];
 
-    interface json {
-        day: string;
-        date: string;
-        times: bookingTime[];
+    const calenderDate: CalendarYear[] = [
+        {
+            year: 2023,
+            months: [
+                {
+                    month: 1,
+                    days: [
+                        {
+                            day: 1,
+                            appointments: [
+                                { hour: "09", minutes: quarterHour },
+                            ],
+                        },
+                    ],
+                },
+            ],
+        },
+    ];
+
+    interface CalendarYear {
+        year: number;
+        months: CalendarMonth[];
     }
-    type bookingTime = {
-        hour: number;
-        booked: boolean;
-    };
-    const appointmentData = () => {
-        let times: any[] = [];
-        let tmp: Array<json> = [];
-        for (let index = 0; index < week.length; index++) {
-            let date = week[index].toLocaleDateString();
-            let day = week[index].toDateString().substring(0, 3);
-            for (let i = 0; i < 8; i++) {
-                let hour = i;
-                times[i] = { hour: hour + 9, booked: true };
-            }
-            tmp.push({ date, day, times });
+
+    interface CalendarMonth {
+        month: number;
+        days: CalendarDay[];
+    }
+
+    interface CalendarDay {
+        day: number;
+        appointments: Appointment[];
+    }
+
+    interface Appointment {
+        hour: string;
+        minutes: Array<string>;
+    }
+
+    function DataCalender() {
+        const calenderData: CalendarYear[] = [];
+        const appointment: Array<Appointment> = [];
+        const hourRowsReactElement = [];
+        for (let index = openingHours.from; index < openingHours.to; index++) {
+            const appTmp: Array<Appointment> = [
+                {
+                    hour: String(index),
+                    minutes: quarterHour,
+                },
+            ];
+            appointment.push(...appTmp);
         }
-        return tmp;
-    };
-    appointmentData();
+        week.map((day, i) => {
+            const tmp: CalendarYear[] = [
+                {
+                    year: day.getFullYear(),
+                    months: [
+                        {
+                            month: day.getMonth() + 1,
+                            days: [
+                                {
+                                    day: day.getDate(),
+                                    appointments: appointment,
+                                },
+                            ],
+                        },
+                    ],
+                },
+            ];
+            calenderData.push(...tmp);
+        });
+
+        for (let index = 0; index < appointment.length; index++) {
+            hourRowsReactElement.push(
+                calenderData.flatMap((a) =>
+                    a.months.flatMap((a) =>
+                        a.days.flatMap((a) => (
+                            <td>{a.appointments[index].hour}</td>
+                        ))
+                    )
+                )
+            );
+        }
+
+        return (
+            <>
+                <tr>
+                    {calenderData.map((v) => (
+                        <th>{v.months.map((a) => a.days.map((a) => a.day))}</th>
+                    ))}
+                </tr>
+
+                {hourRowsReactElement.map((a) => (
+                    <tr>{a}</tr>
+                ))}
+            </>
+        );
+    }
 
     return (
         <div className="calender">
             <button onClick={getNextWeek}>Get Next Week</button>
-
             <table>
-                {appointmentData().map((v) => (
-                    <>
-                        <tr>
-                            {" "}
-                            <th>
-                                {v.day} / {v.date}
-                            </th>
-                            {v.times.map((a) => (
-                                <td>
-                                    <button value={v.date + "--" + a.hour}>
-                                        {" "}
-                                        {a.hour}{" "}
-                                    </button>{" "}
-                                </td>
-                            ))}
-                        </tr>
-                    </>
-                ))}
+                <DataCalender />
             </table>
         </div>
     );
