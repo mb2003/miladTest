@@ -1,4 +1,6 @@
+import { Button } from "@mui/material";
 import { addDays, getDate } from "date-fns";
+import id from "date-fns/esm/locale/id/index.js";
 import { stringify } from "querystring";
 import React, {
     JSXElementConstructor,
@@ -72,25 +74,6 @@ function Calender() {
 
     const quarterHour = [":00", ":15", ":30", ":45"];
 
-    const calenderDate: CalendarYear[] = [
-        {
-            year: 2023,
-            months: [
-                {
-                    month: 1,
-                    days: [
-                        {
-                            day: 1,
-                            appointments: [
-                                { hour: "09", minutes: quarterHour },
-                            ],
-                        },
-                    ],
-                },
-            ],
-        },
-    ];
-
     interface CalendarYear {
         year: number;
         months: CalendarMonth[];
@@ -102,7 +85,7 @@ function Calender() {
     }
 
     interface CalendarDay {
-        day: number;
+        day: string;
         appointments: Appointment[];
     }
 
@@ -111,6 +94,12 @@ function Calender() {
         minutes: Array<string>;
     }
 
+    const idCreator =() => {
+        let id = 10000 * Math.random()
+        
+        return id;
+    }
+    
     function DataCalender() {
         const calenderData: CalendarYear[] = [];
         const appointment: Array<Appointment> = [];
@@ -133,7 +122,7 @@ function Calender() {
                             month: day.getMonth() + 1,
                             days: [
                                 {
-                                    day: day.getDate(),
+                                    day: day.toString().substring(0,15),
                                     appointments: appointment,
                                 },
                             ],
@@ -148,8 +137,8 @@ function Calender() {
             hourRowsReactElement.push(
                 calenderData.flatMap((a) =>
                     a.months.flatMap((a) =>
-                        a.days.flatMap((a) => (
-                            <td>{a.appointments[index].hour}</td>
+                        a.days.flatMap((a, i) => (
+                            <td key={idCreator()}><Button >{a.appointments[index].hour}</Button></td>
                         ))
                     )
                 )
@@ -157,26 +146,25 @@ function Calender() {
         }
 
         return (
-            <>
+            <table>
                 <tr>
                     {calenderData.map((v) => (
-                        <th>{v.months.map((a) => a.days.map((a) => a.day))}</th>
+                        <th key={idCreator()}>{v.months.map((a) => a.days.map((a) => a.day))}</th>
                     ))}
                 </tr>
 
-                {hourRowsReactElement.map((a) => (
-                    <tr>{a}</tr>
+                {hourRowsReactElement.map((a, i) => (
+                    <tr key={i}>{a}</tr>
                 ))}
-            </>
+            </table>
         );
     }
 
     return (
         <div className="calender">
             <button onClick={getNextWeek}>Get Next Week</button>
-            <table>
-                <DataCalender />
-            </table>
+            <DataCalender />
+   
         </div>
     );
 }
