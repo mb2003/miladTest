@@ -1,15 +1,15 @@
-table tr th{
+table tr th {
     border: grey 1px solid;
     margin: inherit;
     padding: inherit;
 }
 
-td{
+td {
     border: lavender 1px solid;
 }
 
 
-button{
+button {
     width: 3rem;
     height: 3rem;
     background-color : lightblue
