@@ -3,8 +3,9 @@ set -Eeuo pipefail
 
 REMOTE="origin"
 NEW_BRANCH_PREFIX="chore/EVOPXL-Git-Branch-Update-"
-ALL_SUFFIXES=("preview-a" "preview-b" "preview-c" "preview-d")
+ALL_SUFFIXES=("preview-a" "preview-b" "preview-c" "preview-d", "preview-e")
 SUFFIXES=("${ALL_SUFFIXES[@]}")
+MAIN_WINS_ON_CONFLICTS=false
 
 die() {
   echo "ERROR: $*" >&2
@@ -24,12 +25,16 @@ usage() {
 Usage:
   ./git-update.sh
   ./git-update.sh preview=a,b
+  ./git-update.sh --main-wins
+  ./git-update.sh preview=a,b --main-wins
 
 Examples:
   ./git-update.sh preview=a,b
   ./git-update.sh preview=preview-a,preview-c
+  ./git-update.sh preview=a,b --main-wins
 
 When no preview filter is provided, all configured previews are updated.
+`--main-wins` auto-resolves rebase conflicts in favor of the base branch.
 EOF
 }
 
@@ -87,6 +92,9 @@ parse_args() {
       preview=*)
         parse_preview_filter "${arg#preview=}"
         ;;
+      --main-wins)
+        MAIN_WINS_ON_CONFLICTS=true
+        ;;
       -h|--help)
         usage
         exit 0
@@ -129,6 +137,9 @@ fi
 BASE_REF="${REMOTE}/${DEFAULT_BRANCH}"
 info "Default branch detected: ${BASE_REF}"
 info "Target previews: ${SUFFIXES[*]}"
+if [[ "${MAIN_WINS_ON_CONFLICTS}" == "true" ]]; then
+  info "Conflict strategy: base branch wins for conflicting hunks during rebase"
+fi
 
 FAILED_REBASES=()
 
@@ -136,19 +147,26 @@ find_matching_remote_branches() {
   local suffix="$1"
 
   git for-each-ref --format='%(refname:short)' "refs/remotes/${REMOTE}" \
-    | grep -E "/${suffix}$" || true
+    | grep -E "${suffix}$" || true
 }
 
 rebase_remote_branch() {
   local remote_branch="$1"
   local local_branch="${remote_branch#${REMOTE}/}"
+  local rebase_cmd=(git rebase)
 
   info "Rebasing ${remote_branch} onto ${BASE_REF}..."
 
   # Create/reset local branch to match remote branch
   git checkout -B "${local_branch}" "${remote_branch}"
 
-  if ! git rebase "${BASE_REF}"; then
+  if [[ "${MAIN_WINS_ON_CONFLICTS}" == "true" ]]; then
+    rebase_cmd+=(--merge -X ours)
+  fi
+
+  rebase_cmd+=("${BASE_REF}")
+
+  if ! "${rebase_cmd[@]}"; then
     warn "Rebase failed for ${remote_branch}. Aborting only this rebase."
     git rebase --abort || true
     FAILED_REBASES+=("${remote_branch}")
